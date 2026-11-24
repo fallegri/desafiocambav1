@@ -223,4 +223,8 @@ npm run db:seed:reset  # además restablece su contraseña
 - **Assets reales**: todas las imágenes e ilustraciones y los clips de audio son los provistos para el proyecto, no placeholders.
 - **Fidelidad al Figma**: el copy (incluyendo jerga y frases coloquiales) se mantiene tal cual aparece en el diseño original; la spec completa está en `docs/specs/`.
 
+## Licencia
+
+MIT — ver [LICENSE](LICENSE). Podés usar, copiar, modificar y distribuir el proyecto citando el aviso de copyright.
+
 ---
