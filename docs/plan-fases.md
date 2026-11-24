@@ -81,11 +81,7 @@ api/_lib/ai/
   validate.js       # Saneamiento y validación estricta de cada ítem
   content.js        # Generación, cuota diaria, bandeja y revisión
 
-api/admin/ai/
-  providers.js          # GET  /api/admin/ai/providers
-  generate.js           # POST /api/admin/ai/generate
-  content/index.js      # GET  /api/admin/ai/content
-  content/[id].js       # PATCH /api/admin/ai/content/:id
+api/admin/ai/[...path].js   # GET providers · POST generate · GET content · PATCH content/:id
 
 api/content/index.js    # GET /api/content?kind=... (público, solo aprobado)
 ```

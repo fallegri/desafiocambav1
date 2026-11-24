@@ -114,8 +114,8 @@ api/                          # Funciones serverless (Vercel) — nunca se empaq
     rateLimit.js                # Límite simple por IP
     audit.js                    # Trazabilidad de acciones privilegiadas
   auth/                         # register, login, logout, me
-  admin/users/                  # Listado y acciones sobre usuarios
-  admin/ai/                     # Proveedores, generación y revisión de contenido IA
+  admin/users/                  # Router catch-all: listado (GET) y acciones (PATCH)
+  admin/ai/                     # Router catch-all: proveedores, generación y revisión IA
   content/                      # Contenido aprobado, público y cacheable
   achievements/                 # GET logros / POST resultado
   health.js                     # Smoke test Vercel + Neon
@@ -206,6 +206,8 @@ npm run db:seed:reset  # además restablece su contraseña
 3. Cargar `DATABASE_URL` y `JWT_SECRET` en Environment Variables.
 4. Correr `npm run db:migrate` y `npm run db:seed` apuntando a la base de producción (localmente con el `.env` de producción, o desde un job).
 5. Deploy. Verificar `GET /api/health`.
+
+> **Plan Hobby de Vercel:** el límite es de 12 Serverless Functions por deploy. Por eso las rutas de administración viven en dos routers catch-all (`api/admin/users/[...path].js` y `api/admin/ai/[...path].js`) en vez de un archivo por endpoint: hoy el proyecto usa 9 funciones. Si agregás rutas nuevas, agrupalas igual o pasate a Pro.
 
 ## Roadmap
 
