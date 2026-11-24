@@ -22,5 +22,26 @@ describe('LeyendaCategory', () => {
 
     fireEvent.click(screen.getByText('Ir a la ruleta'))
     expect(onRoundComplete).toHaveBeenCalledOnce()
+    expect(onRoundComplete).toHaveBeenCalledWith({
+      score: 0,
+      maxScore: 100,
+      detail: { hits: 0, total: 1 },
+    })
+  })
+
+  it('scores a guessed legend as a perfect round', () => {
+    const onRoundComplete = vi.fn()
+    render(<LeyendaCategory onRoundComplete={onRoundComplete} />)
+
+    fireEvent.click(screen.getByText('¡Inicia!'))
+    fireEvent.click(screen.getByText('¡Inicia!'))
+    fireEvent.click(screen.getByText('Ya adivinó'))
+    fireEvent.click(screen.getByText('Ir a la ruleta'))
+
+    expect(onRoundComplete).toHaveBeenCalledWith({
+      score: 100,
+      maxScore: 100,
+      detail: { hits: 1, total: 1 },
+    })
   })
 })

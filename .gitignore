@@ -21,3 +21,9 @@ lerna-debug.log*
 
 # Local Netlify folder
 .netlify
+
+# Variables de entorno (nunca versionar secretos)
+.env
+.env.*
+!.env.example
+.vercel

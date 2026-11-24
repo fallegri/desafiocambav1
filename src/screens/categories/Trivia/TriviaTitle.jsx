@@ -10,8 +10,10 @@ export default function TriviaTitle({ onStart }) {
             ¡Trivia de
             <span className="category-title__highlight">Cultura general!</span>
           </h2>
-          <p className="category-title__subtitle">Cuidado eh cunumi, demuestra que tan cambanga soj</p>
-          <p>Tienes 10s</p>
+          <p className="category-title__subtitle">
+            Cultura general y modismos cruceños, benianos y cambas
+          </p>
+          <p>Tienes 15s por pregunta</p>
         </TornCard>
         <PillButton label="¡Inicia!" onClick={onStart} />
       </div>

@@ -1,0 +1,55 @@
+.versus-scoreboard {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: var(--radius-pill);
+  background: rgba(0, 0, 0, 0.45);
+  color: var(--color-text-light);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+}
+
+.versus-scoreboard__player {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: var(--radius-pill);
+  opacity: 0.7;
+  transition: background 0.15s ease, color 0.15s ease, opacity 0.15s ease;
+}
+
+.versus-scoreboard__player--active {
+  background: var(--color-accent);
+  color: var(--color-text-dark);
+  opacity: 1;
+}
+
+.versus-scoreboard__name {
+  font-family: var(--font-body);
+  font-style: italic;
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.versus-scoreboard__score {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 24px;
+  line-height: 1;
+}
+
+.versus-scoreboard__vs {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 800;
+  font-size: 20px;
+  letter-spacing: 1px;
+  padding: 0 6px;
+}
+
+/* Same layout as .category-game, but stacked so the scoreboard can sit
+   above the card instead of beside it. */
+.category-game--column {
+  flex-direction: column;
+}

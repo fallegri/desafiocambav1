@@ -49,9 +49,9 @@ export default function LeyendaGame({ onFinished }) {
           {imageSrc && <img className="leyenda-game__image" src={imageSrc} alt={leyenda.nombre} />}
           <ProgressTimerBar totalSeconds={ROUND_SECONDS} secondsLeft={secondsLeft} />
         </TornCard>
-        {!timeUp && <PillButton label="Ya adivinó" onClick={onFinished} />}
+        {!timeUp && <PillButton label="Ya adivinó" onClick={() => onFinished(true)} />}
       </div>
-      <TimeUpOverlay visible={timeUp} onContinue={onFinished} />
+      <TimeUpOverlay visible={timeUp} onContinue={() => onFinished(false)} />
       <audio ref={countdownRef} src="/audio/trivia-countdown.mp3" loop data-testid="trivia-countdown-audio" />
     </div>
   )

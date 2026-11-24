@@ -1,0 +1,176 @@
+.ai-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin: 8px 0 20px;
+  padding: 20px;
+  border-radius: 18px;
+  background: rgba(16, 50, 26, 0.05);
+}
+
+.ai-form__row {
+  display: flex;
+  gap: 16px;
+}
+
+.ai-form__row > .auth-field {
+  flex: 1;
+}
+
+.ai-form .auth-field select {
+  border: 2px solid rgba(16, 50, 26, 0.2);
+  border-radius: 14px;
+  padding: 12px 14px;
+  font-family: var(--font-body);
+  font-size: 16px;
+  color: var(--color-text-dark);
+  background: #ffffff;
+}
+
+.ai-form .auth-field input {
+  background: #ffffff;
+}
+
+.ai-form .auth-submit {
+  align-self: flex-end;
+}
+
+.ai-rejected {
+  margin: 0 0 20px;
+  padding: 12px 16px;
+  border-radius: 14px;
+  background: rgba(200, 40, 40, 0.08);
+  font-size: 14px;
+}
+
+.ai-rejected summary {
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.ai-review__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.ai-review__head h3 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.ai-review__head .auth-tabs {
+  margin: 0;
+}
+
+.ai-list {
+  list-style: none;
+  margin: 16px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 460px;
+  overflow-y: auto;
+}
+
+.ai-item {
+  padding: 16px 18px;
+  border: 2px solid rgba(16, 50, 26, 0.12);
+  border-radius: 16px;
+  background: #ffffff;
+}
+
+.ai-item__meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.ai-kind {
+  padding: 4px 12px;
+  border-radius: var(--radius-pill);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  background: rgba(16, 50, 26, 0.1);
+}
+
+.ai-kind--trivia {
+  background: rgba(126, 211, 33, 0.25);
+}
+
+.ai-kind--no_se_dice {
+  background: rgba(33, 150, 211, 0.2);
+}
+
+.ai-kind--cancion {
+  background: rgba(211, 160, 33, 0.25);
+}
+
+.ai-item__title {
+  margin: 0 0 8px;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.ai-item__muted {
+  font-size: 13px;
+  opacity: 0.7;
+  font-weight: 400;
+}
+
+.ai-item__options {
+  margin: 0;
+  padding-left: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 15px;
+}
+
+.ai-item__options .is-correct {
+  font-weight: 700;
+  color: #2f5c09;
+}
+
+.ai-item__check {
+  color: #2f5c09;
+}
+
+.ai-item__answer {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: #2f5c09;
+}
+
+.ai-item__note {
+  margin: 6px 0 0;
+  font-size: 14px;
+  font-style: italic;
+  opacity: 0.8;
+}
+
+.ai-item__actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.auth-submit--danger {
+  background: rgba(200, 40, 40, 0.14);
+  color: #8c1d1d;
+}
+
+.auth-staff-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 24px;
+}

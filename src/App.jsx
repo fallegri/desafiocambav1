@@ -3,6 +3,9 @@ import SplashScreen from './screens/SplashScreen'
 import WheelScreen from './screens/WheelScreen'
 import CategoryRouter from './CategoryRouter'
 import MusicToggle from './components/MusicToggle'
+import AccountDock from './components/AccountDock'
+import { useAuth } from './auth/AuthContext'
+import { api } from './lib/api'
 import { useStageScale } from './hooks/useStageScale'
 import { playBackgroundMusic } from './lib/backgroundMusic'
 
@@ -13,6 +16,29 @@ export default function App() {
   const [categoryId, setCategoryId] = useState(null)
   const stageRef = useRef(null)
   const scale = useStageScale()
+  const { user } = useAuth()
+
+  // Guests play without an account; logged-in players get the round recorded.
+  // A failing backend must never block the game, hence the fire-and-forget.
+  function recordRound(result) {
+    if (!user || !categoryId) return
+    // The defensive unknown-category stub reports no score; recording it
+    // would add 0/0 rows that only inflate the "rounds played" stats.
+    if (!result || !(result.maxScore > 0)) return
+    api
+      .recordResult({
+        categoryId,
+        score: result?.score ?? 0,
+        maxScore: result?.maxScore ?? 0,
+        detail: result?.detail ?? {},
+      })
+      .catch(() => {})
+  }
+
+  function handleRoundComplete(result) {
+    recordRound(result)
+    setStage(STAGES.WHEEL)
+  }
 
   return (
     <div className="app-shell">
@@ -29,6 +55,7 @@ export default function App() {
           />
         )}
         <MusicToggle />
+        <AccountDock />
         {stage === STAGES.WHEEL && (
           <WheelScreen
             onCategorySelected={(id) => {
@@ -38,10 +65,7 @@ export default function App() {
           />
         )}
         {stage === STAGES.CATEGORY && (
-          <CategoryRouter
-            categoryId={categoryId}
-            onRoundComplete={() => setStage(STAGES.WHEEL)}
-          />
+          <CategoryRouter categoryId={categoryId} onRoundComplete={handleRoundComplete} />
         )}
       </div>
     </div>

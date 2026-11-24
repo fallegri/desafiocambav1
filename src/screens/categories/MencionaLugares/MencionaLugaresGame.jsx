@@ -42,9 +42,9 @@ export default function MencionaLugaresGame({ onFinished }) {
           <p className="menciona-lugares__hint">Ahorita sacan la labia puej</p>
           <ProgressTimerBar totalSeconds={ROUND_SECONDS} secondsLeft={secondsLeft} />
         </TornCard>
-        {!timeUp && <PillButton label="Ya terminé" onClick={onFinished} />}
+        {!timeUp && <PillButton label="Ya terminé" onClick={() => onFinished(true)} />}
       </div>
-      <TimeUpOverlay visible={timeUp} onContinue={onFinished} />
+      <TimeUpOverlay visible={timeUp} onContinue={() => onFinished(false)} />
       <audio ref={countdownRef} src="/audio/trivia-countdown.mp3" loop data-testid="trivia-countdown-audio" />
     </div>
   )

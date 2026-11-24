@@ -3,13 +3,14 @@ import TornCard from '../../../components/TornCard'
 import ProgressTimerBar from '../../../components/ProgressTimerBar'
 import TimeUpOverlay from '../../../components/TimeUpOverlay'
 import PillButton from '../../../components/PillButton'
+import VersusScoreboard from '../../../components/VersusScoreboard'
 import { useCountdown } from '../../../hooks/useCountdown'
 
 const QUESTION_SECONDS = 15
 const OPTION_LETTERS = ['A', 'B', 'C', 'D']
 const LONG_OPTION_THRESHOLD = 24 // chars; beyond this, font drops per spec
 
-export default function TriviaQuestion({ question, questionIndex, total, onAnswered }) {
+export default function TriviaQuestion({ question, questionIndex, total, versus, onAnswered }) {
   const [answered, setAnswered] = useState(false)
   const [selectedIndex, setSelectedIndex] = useState(null)
   const [timeUp, setTimeUp] = useState(false)
@@ -23,6 +24,8 @@ export default function TriviaQuestion({ question, questionIndex, total, onAnswe
   }, [start, question])
 
   const hasLongOptions = question.opciones.some((opt) => opt.length > LONG_OPTION_THRESHOLD)
+  const turnLabel = versus ? versus.players[versus.activeIndex]?.name : null
+  const screenClass = `category-game${versus ? ' category-game--column' : ''}`
 
   function handleSelect(index) {
     if (answered || timeUp) return
@@ -43,7 +46,8 @@ export default function TriviaQuestion({ question, questionIndex, total, onAnswe
   // jumping straight to the next question.
   if (showTimeUpReveal) {
     return (
-      <div className="category-game">
+      <div className={screenClass}>
+        {versus && <VersusScoreboard {...versus} />}
         <div className="card-with-actions">
           <TornCard>
             <p className="category-game__prompt">{question.pregunta}</p>
@@ -53,17 +57,24 @@ export default function TriviaQuestion({ question, questionIndex, total, onAnswe
             </div>
             <p className="trivia-question__facilingo">Facilingo verdad?</p>
           </TornCard>
-          <PillButton label="Continuar" onClick={() => onAnswered()} />
+          <PillButton label="Continuar" onClick={() => onAnswered(false)} />
         </div>
       </div>
     )
   }
 
   return (
-    <div className="category-game">
+    <div className={screenClass}>
+      {versus && <VersusScoreboard {...versus} />}
       <div className="card-with-actions">
         <TornCard className="trivia-question__card">
-          <p className="trivia-question__meta">Pregunta {questionIndex + 1} de {total}</p>
+          <p className="trivia-question__meta">
+            Pregunta {questionIndex + 1} de {total}
+            {turnLabel && ` · Turno de ${turnLabel}`}
+          </p>
+          {question.origen && (
+            <p className="trivia-question__tag">Modismo {question.origen}</p>
+          )}
           <p className="category-game__prompt">{question.pregunta}</p>
           <div className={`trivia-question__options ${hasLongOptions ? 'trivia-question__options--long' : ''}`}>
             {question.opciones.map((opt, i) => (
@@ -86,7 +97,9 @@ export default function TriviaQuestion({ question, questionIndex, total, onAnswe
         {answered && !timeUp && (
           <p className="trivia-question__reveal" role="status">Respuesta correcta: {question.opciones[question.correctaIndex]}</p>
         )}
-        {answered && !timeUp && <PillButton label="Siguiente" onClick={() => onAnswered()} />}
+        {answered && !timeUp && (
+          <PillButton label="Siguiente" onClick={() => onAnswered(selectedIndex === question.correctaIndex)} />
+        )}
       </div>
       <TimeUpOverlay
         visible={timeUp}

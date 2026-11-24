@@ -51,8 +51,8 @@ export default function EnchoqueTimer({ onFinished }) {
           <p className="enchoque-timer__clock">{formatTime(secondsLeft)}</p>
         </TornCard>
         {!started && <PillButton label="Empezar" onClick={handleStart} />}
-        {started && !done && <PillButton label="Cancelar" onClick={onFinished} />}
-        {done && <PillButton label="Terminar ronda" onClick={onFinished} />}
+        {started && !done && <PillButton label="Cancelar" onClick={() => onFinished(false)} />}
+        {done && <PillButton label="Terminar ronda" onClick={() => onFinished(true)} />}
         <ProgressTimerBar totalSeconds={config.duracionSegundos} secondsLeft={secondsLeft} />
       </div>
       <audio ref={countdownRef} src="/audio/trivia-countdown.mp3" loop data-testid="trivia-countdown-audio" />

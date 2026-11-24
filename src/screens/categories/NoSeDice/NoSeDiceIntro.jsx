@@ -1,5 +1,5 @@
 import TornCard from '../../../components/TornCard'
-import PillButton from '../../../components/PillButton'
+import ModePicker from '../../../components/ModePicker'
 
 export default function NoSeDiceIntro({ onStart }) {
   return (
@@ -11,9 +11,9 @@ export default function NoSeDiceIntro({ onStart }) {
             <span className="category-title__highlight">se dice...</span>
           </h2>
           <p className="category-title__subtitle">Cuidado eh cunumi, demuestra que tan cambanga soj</p>
-          <p>Tienes 10s</p>
+          <p>En 1 vs 1 cada jugador tiene su propia tarjeta y 10s para adivinarla.</p>
         </TornCard>
-        <PillButton label="¡Inicia!" onClick={onStart} />
+        <ModePicker onSelect={onStart} />
       </div>
     </div>
   )

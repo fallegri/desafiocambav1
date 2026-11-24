@@ -26,5 +26,27 @@ describe('EnchoqueCategory', () => {
     fireEvent.click(screen.getByText('Terminar ronda'))
     fireEvent.click(screen.getByText('Ir a la ruleta'))
     expect(onRoundComplete).toHaveBeenCalledOnce()
+    expect(onRoundComplete).toHaveBeenCalledWith({
+      score: 100,
+      maxScore: 100,
+      detail: { hits: 1, total: 1 },
+    })
+  })
+
+  it('cancelling the round scores zero', () => {
+    const onRoundComplete = vi.fn()
+    render(<EnchoqueCategory onRoundComplete={onRoundComplete} />)
+
+    fireEvent.click(screen.getByText('¡Inicia!'))
+    fireEvent.click(screen.getByText('¡Inicia!'))
+    fireEvent.click(screen.getByText('Empezar'))
+    fireEvent.click(screen.getByText('Cancelar'))
+    fireEvent.click(screen.getByText('Ir a la ruleta'))
+
+    expect(onRoundComplete).toHaveBeenCalledWith({
+      score: 0,
+      maxScore: 100,
+      detail: { hits: 0, total: 1 },
+    })
   })
 })

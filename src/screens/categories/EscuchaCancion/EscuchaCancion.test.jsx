@@ -33,6 +33,31 @@ describe('CancionCategory', () => {
     fireEvent.click(screen.getByText('Continuar'))
     fireEvent.click(screen.getByText('Ir a la ruleta'))
     expect(onRoundComplete).toHaveBeenCalledOnce()
+    expect(onRoundComplete).toHaveBeenCalledWith({
+      score: 0,
+      maxScore: 100,
+      detail: { hits: 0, total: 1 },
+    })
+  })
+
+  it('scores a known song as a perfect round', () => {
+    const onRoundComplete = vi.fn()
+    render(<CancionCategory onRoundComplete={onRoundComplete} />)
+
+    fireEvent.click(screen.getByText('¡Inicia!'))
+    fireEvent.ended(screen.getByTestId('cancion-audio'))
+    fireEvent.click(screen.getByText('Continuar'))
+
+    fireEvent.click(screen.getByText('¡Si la sé!'))
+    expect(screen.getByText('Temón!')).toBeInTheDocument()
+
+    fireEvent.click(screen.getByText('Continuar'))
+    fireEvent.click(screen.getByText('Ir a la ruleta'))
+    expect(onRoundComplete).toHaveBeenCalledWith({
+      score: 100,
+      maxScore: 100,
+      detail: { hits: 1, total: 1 },
+    })
   })
 
   it('"Repetir 3s" replays the clip from the start', () => {

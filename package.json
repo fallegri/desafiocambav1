@@ -8,9 +8,15 @@
     "build": "vite build",
     "lint": "oxlint",
     "preview": "vite preview",
-    "test": "vitest run"
+    "test": "vitest run",
+    "db:migrate": "node scripts/migrate.mjs",
+    "db:seed": "node scripts/seed-superadmin.mjs",
+    "db:seed:reset": "node scripts/seed-superadmin.mjs --reset-password"
   },
   "dependencies": {
+    "@neondatabase/serverless": "^1.2.1",
+    "bcryptjs": "^3.0.3",
+    "jose": "^6.2.18",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "react-router-dom": "^7.18.4"

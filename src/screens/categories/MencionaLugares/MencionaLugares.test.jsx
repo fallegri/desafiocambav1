@@ -22,6 +22,11 @@ describe('MencionaLugaresCategory', () => {
 
     fireEvent.click(screen.getByText('Ir a la ruleta'))
     expect(onRoundComplete).toHaveBeenCalledOnce()
+    expect(onRoundComplete).toHaveBeenCalledWith({
+      score: 0,
+      maxScore: 100,
+      detail: { hits: 0, total: 1 },
+    })
   })
 
   it('"Ya terminé" finishes the round immediately without showing the time-up overlay', () => {
@@ -33,5 +38,12 @@ describe('MencionaLugaresCategory', () => {
 
     expect(screen.queryByText('¡Se acabó el Tiempo!')).not.toBeInTheDocument()
     expect(screen.getByText('Ir a la ruleta')).toBeInTheDocument()
+
+    fireEvent.click(screen.getByText('Ir a la ruleta'))
+    expect(onRoundComplete).toHaveBeenCalledWith({
+      score: 100,
+      maxScore: 100,
+      detail: { hits: 1, total: 1 },
+    })
   })
 })

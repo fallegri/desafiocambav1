@@ -37,9 +37,9 @@ export default function CancionAnswer({ onFinished }) {
           <h3>¿Apoco y te la sabes?</h3>
           <ProgressTimerBar totalSeconds={ANSWER_SECONDS} secondsLeft={secondsLeft} />
         </TornCard>
-        {!timeUp && <PillButton label="¡Si la sé!" onClick={onFinished} />}
+        {!timeUp && <PillButton label="¡Si la sé!" onClick={() => onFinished(true)} />}
       </div>
-      <TimeUpOverlay visible={timeUp} onContinue={onFinished} continueLabel="Continuar" />
+      <TimeUpOverlay visible={timeUp} onContinue={() => onFinished(false)} continueLabel="Continuar" />
       <audio ref={countdownRef} src="/audio/trivia-countdown.mp3" loop data-testid="trivia-countdown-audio" />
     </div>
   )

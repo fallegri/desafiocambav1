@@ -1,0 +1,12 @@
+.mode-picker {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+}
+
+.mode-picker .pill-button {
+  padding: 14px 34px;
+  font-size: 22px;
+}

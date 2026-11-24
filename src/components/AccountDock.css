@@ -1,0 +1,45 @@
+.account-dock {
+  position: absolute;
+  top: 24px;
+  right: 88px;
+  height: 52px;
+  max-width: 220px;
+  padding: 0 18px 0 8px;
+  border: none;
+  border-radius: var(--radius-pill);
+  background: rgba(10, 20, 12, 0.55);
+  color: var(--color-text-light);
+  font-family: var(--font-body);
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  z-index: 50;
+}
+
+.account-dock:hover {
+  background: rgba(10, 20, 12, 0.75);
+}
+
+.account-dock__icon {
+  width: 36px;
+  height: 36px;
+  flex: 0 0 36px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  color: var(--color-text-dark);
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.account-dock__label {
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

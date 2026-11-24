@@ -34,3 +34,35 @@
   font-size: 22px;
   color: var(--color-accent-dark);
 }
+.round-end-screen__score {
+  margin: -12px 0 20px;
+  font-family: var(--font-display);
+  font-size: 30px;
+  font-weight: 800;
+  color: var(--color-text-dark);
+}
+.round-end-screen__players {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0 0 24px;
+  padding: 0;
+  list-style: none;
+}
+.round-end-screen__player {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 28px;
+  min-width: 360px;
+  padding: 10px 20px;
+  border-radius: var(--radius-pill);
+  background: rgba(0, 0, 0, 0.08);
+}
+.round-end-screen__player-name {
+  font-weight: 700;
+}
+.round-end-screen__player-score {
+  font-family: var(--font-display);
+  font-weight: 800;
+}

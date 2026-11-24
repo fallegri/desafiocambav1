@@ -25,7 +25,7 @@ export default function CategoryRouter({ categoryId, onRoundComplete }) {
   return (
     <RoundEndScreen
       message={`(stub) Categoría "${categoryId}" — pendiente de implementar`}
-      onBackToWheel={onRoundComplete}
+      onBackToWheel={() => onRoundComplete()}
     />
   )
 }
