@@ -28,11 +28,21 @@ export function methodNotAllowed(res, allowed) {
 // Vercel parses JSON bodies for the Node runtime, but `vercel dev`, plain
 // `node:http` and tests may not, so fall back to reading the stream.
 export async function readJsonBody(req) {
-  if (req.body !== undefined && req.body !== null && typeof req.body === 'object') {
-    return req.body
+  let body
+  try {
+    body = req.body
+  } catch {
+    // Vercel's Node runtime parses the body eagerly and throws on malformed
+    // JSON; turn that into the same 400 the stream path produces instead of
+    // letting an unexpected error become a 500.
+    throw new HttpError(400, 'El cuerpo debe ser un objeto JSON válido')
   }
-  if (typeof req.body === 'string' && req.body.length > 0) {
-    return parseBody(req.body)
+
+  if (body !== undefined && body !== null && typeof body === 'object') {
+    return body
+  }
+  if (typeof body === 'string' && body.length > 0) {
+    return parseBody(body)
   }
 
   const raw = await new Promise((resolve, reject) => {
