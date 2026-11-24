@@ -8,6 +8,13 @@
       "maxDuration": 10
     }
   },
+  "rewrites": [
+    { "source": "/api/admin/users/:id", "destination": "/api/admin/users?id=:id" },
+    { "source": "/api/admin/ai/providers", "destination": "/api/admin/ai?route=providers" },
+    { "source": "/api/admin/ai/generate", "destination": "/api/admin/ai?route=generate" },
+    { "source": "/api/admin/ai/content/:id", "destination": "/api/admin/ai?route=content&id=:id" },
+    { "source": "/api/admin/ai/content", "destination": "/api/admin/ai?route=content" }
+  ],
   "headers": [
     {
       "source": "/(.*)",

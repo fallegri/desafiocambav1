@@ -2,8 +2,10 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 // The admin routes share one serverless function each (Vercel Hobby caps a
-// deployment at 12), so dispatch is the part worth pinning: URLs must behave
-// exactly like the old index.js + [id].js pair.
+// deployment at 12, and plain Node functions have no dynamic file routes), so
+// `vercel.json` rewrites the public URLs onto these files with `?route=` /
+// `?id=`. Dispatch is the part worth pinning: every public URL must behave
+// exactly like the separate files it replaced.
 const mocks = vi.hoisted(() => ({
   listUsers: vi.fn(async () => ({ users: [{ id: 'u-1' }], total: 1 })),
   applyUserAction: vi.fn(async (_sql, { targetId }) => ({
@@ -45,8 +47,8 @@ vi.mock('../_lib/ai/content.js', () => ({
   reviewContent: mocks.reviewContent,
 }))
 
-const { default: usersHandler } = await import('./users/[...path].js')
-const { default: aiHandler } = await import('./ai/[...path].js')
+const { default: usersHandler } = await import('./users.js')
+const { default: aiHandler } = await import('./ai.js')
 
 function makeResponse() {
   return {
@@ -62,15 +64,8 @@ function makeResponse() {
   }
 }
 
-function makeRequest({ method = 'GET', path, query = {}, body } = {}) {
-  return {
-    method,
-    headers: {},
-    url: '/api/admin/test',
-    query: { ...(path === undefined ? {} : { path }), ...query },
-    body,
-    socket: {},
-  }
+function makeRequest({ method = 'GET', query = {}, body } = {}) {
+  return { method, headers: {}, url: '/api/admin/test', query, body, socket: {} }
 }
 
 async function call(handler, request) {
@@ -81,12 +76,9 @@ async function call(handler, request) {
 
 beforeEach(() => vi.clearAllMocks())
 
-describe('admin users router', () => {
+describe('admin users route', () => {
   it('lists users on GET /api/admin/users', async () => {
-    const res = await call(
-      usersHandler,
-      makeRequest({ query: { status: 'pendiente', page: '2' } }),
-    )
+    const res = await call(usersHandler, makeRequest({ query: { status: 'pendiente', page: '2' } }))
 
     expect(res.statusCode).toBe(200)
     expect(res.payload).toMatchObject({ page: 2, total: 1 })
@@ -98,10 +90,10 @@ describe('admin users router', () => {
     })
   })
 
-  it('applies an action on PATCH /api/admin/users/:id', async () => {
+  it('applies an action on PATCH /api/admin/users/:id (rewritten to ?id=)', async () => {
     const res = await call(
       usersHandler,
-      makeRequest({ method: 'PATCH', path: ['u-1'], body: { action: 'approve' } }),
+      makeRequest({ method: 'PATCH', query: { id: 'u-1' }, body: { action: 'approve' } }),
     )
 
     expect(res.statusCode).toBe(200)
@@ -114,25 +106,32 @@ describe('admin users router', () => {
     expect(res.payload.user.id).toBe('u-1')
   })
 
-  it('rejects an unknown action and an unknown route', async () => {
+  it('rejects an unknown action, the wrong method and an invalid role', async () => {
     const badAction = await call(
       usersHandler,
-      makeRequest({ method: 'PATCH', path: ['u-1'], body: { action: 'destroy' } }),
+      makeRequest({ method: 'PATCH', query: { id: 'u-1' }, body: { action: 'destroy' } }),
     )
     expect(badAction.statusCode).toBe(400)
 
-    const wrongMethod = await call(usersHandler, makeRequest({ path: ['u-1'] }))
+    const badRole = await call(
+      usersHandler,
+      makeRequest({
+        method: 'PATCH',
+        query: { id: 'u-1' },
+        body: { action: 'set_role', role: 'dios' },
+      }),
+    )
+    expect(badRole.statusCode).toBe(400)
+
+    const wrongMethod = await call(usersHandler, makeRequest({ query: { id: 'u-1' } }))
     expect(wrongMethod.statusCode).toBe(405)
     expect(wrongMethod.headers.allow).toBe('PATCH')
-
-    const missing = await call(usersHandler, makeRequest({ path: ['a', 'b'] }))
-    expect(missing.statusCode).toBe(404)
   })
 })
 
-describe('admin AI router', () => {
+describe('admin AI route', () => {
   it('returns configured providers on GET /api/admin/ai/providers', async () => {
-    const res = await call(aiHandler, makeRequest({ path: ['providers'] }))
+    const res = await call(aiHandler, makeRequest({ query: { route: 'providers' } }))
 
     expect(res.statusCode).toBe(200)
     expect(res.payload.configured).toBe(true)
@@ -145,7 +144,7 @@ describe('admin AI router', () => {
       aiHandler,
       makeRequest({
         method: 'POST',
-        path: ['generate'],
+        query: { route: 'generate' },
         body: { kind: 'trivia', provider: 'openai', model: 'gpt-test', count: 3 },
       }),
     )
@@ -159,7 +158,10 @@ describe('admin AI router', () => {
   })
 
   it('lists the inbox on GET /api/admin/ai/content', async () => {
-    const res = await call(aiHandler, makeRequest({ path: ['content'], query: { status: 'aprobado' } }))
+    const res = await call(
+      aiHandler,
+      makeRequest({ query: { route: 'content', status: 'aprobado' } }),
+    )
 
     expect(res.statusCode).toBe(200)
     expect(res.payload).toEqual({ items: [{ id: 'c-1' }], pending: 2 })
@@ -170,10 +172,14 @@ describe('admin AI router', () => {
     })
   })
 
-  it('reviews one item on PATCH /api/admin/ai/content/:id', async () => {
+  it('reviews one item on PATCH /api/admin/ai/content/:id (rewritten to ?route=content&id=)', async () => {
     const res = await call(
       aiHandler,
-      makeRequest({ method: 'PATCH', path: ['content', 'c-1'], body: { action: 'approve' } }),
+      makeRequest({
+        method: 'PATCH',
+        query: { route: 'content', id: 'c-1' },
+        body: { action: 'approve' },
+      }),
     )
 
     expect(res.statusCode).toBe(200)
@@ -181,11 +187,11 @@ describe('admin AI router', () => {
   })
 
   it('keeps method and route errors distinct', async () => {
-    const wrongMethod = await call(aiHandler, makeRequest({ method: 'POST', path: ['content'] }))
+    const wrongMethod = await call(aiHandler, makeRequest({ method: 'POST', query: { route: 'content' } }))
     expect(wrongMethod.statusCode).toBe(405)
     expect(wrongMethod.headers.allow).toBe('GET')
 
-    const missing = await call(aiHandler, makeRequest({ path: ['unknown'] }))
+    const missing = await call(aiHandler, makeRequest({ query: { route: 'unknown' } }))
     expect(missing.statusCode).toBe(404)
     expect(missing.payload.error).toBe('Ruta no encontrada')
   })

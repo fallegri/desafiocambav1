@@ -1,40 +1,31 @@
-import { getSql } from '../../_lib/db.js'
-import { logAudit } from '../../_lib/audit.js'
-import {
-  getQuery,
-  methodNotAllowed,
-  readJsonBody,
-  sendJson,
-  withApi,
-} from '../../_lib/http.js'
-import { requireStaff } from '../../_lib/session.js'
-import { listAvailableProviders, resolveProvider } from '../../_lib/ai/providers.js'
-import { CONTENT_KINDS, KIND_LABELS } from '../../_lib/ai/prompts.js'
-import { generateContent, listContent, pendingCount, reviewContent } from '../../_lib/ai/content.js'
+import { getSql } from '../_lib/db.js'
+import { logAudit } from '../_lib/audit.js'
+import { getQuery, methodNotAllowed, readJsonBody, sendJson, withApi } from '../_lib/http.js'
+import { requireStaff } from '../_lib/session.js'
+import { listAvailableProviders, resolveProvider } from '../_lib/ai/providers.js'
+import { CONTENT_KINDS, KIND_LABELS } from '../_lib/ai/prompts.js'
+import { generateContent, listContent, pendingCount, reviewContent } from '../_lib/ai/content.js'
 
 // Generating content takes longer than the rest of the API.
 export const config = { maxDuration: 60 }
 
 const STATUSES = ['pendiente', 'aprobado', 'rechazado']
 
-function segmentsOf(req) {
-  const path = req.query?.path
-  if (Array.isArray(path)) return path.filter(Boolean)
-  if (typeof path === 'string' && path.length > 0) return path.split('/').filter(Boolean)
-  return []
-}
-
-// The four assistant routes share one function (Vercel Hobby caps a deployment
-// at 12). Public URLs are unchanged:
+// The four assistant routes share one function because Vercel Hobby caps a
+// deployment at 12 functions and plain Node functions have no dynamic file
+// routes. `vercel.json` maps the public URLs to `?route=...` (plus `?id=...`
+// for the review endpoint):
 //   GET   /api/admin/ai/providers
 //   POST  /api/admin/ai/generate        { kind, topic, count, provider, model }
 //   GET   /api/admin/ai/content?status=&kind=&limit=
 //   PATCH /api/admin/ai/content/:id     { action: 'approve' | 'reject' | 'edit', payload? }
 export default withApi(async (req, res) => {
-  const [first, second] = segmentsOf(req)
+  const query = getQuery(req)
   const sql = getSql()
+  const route = typeof query.route === 'string' ? query.route : null
+  const id = typeof query.id === 'string' && query.id.length > 0 ? query.id : null
 
-  if (first === 'providers' && second === undefined) {
+  if (route === 'providers') {
     if (req.method !== 'GET') {
       methodNotAllowed(res, ['GET'])
       return
@@ -45,13 +36,13 @@ export default withApi(async (req, res) => {
     const providers = listAvailableProviders()
     sendJson(res, 200, {
       providers,
-      kinds: CONTENT_KINDS.map((id) => ({ id, label: KIND_LABELS[id] })),
+      kinds: CONTENT_KINDS.map((kind) => ({ id: kind, label: KIND_LABELS[kind] })),
       configured: providers.length > 0,
     })
     return
   }
 
-  if (first === 'generate' && second === undefined) {
+  if (route === 'generate') {
     if (req.method !== 'POST') {
       methodNotAllowed(res, ['POST'])
       return
@@ -88,7 +79,7 @@ export default withApi(async (req, res) => {
     return
   }
 
-  if (first === 'content' && second === undefined) {
+  if (route === 'content' && !id) {
     if (req.method !== 'GET') {
       methodNotAllowed(res, ['GET'])
       return
@@ -96,7 +87,6 @@ export default withApi(async (req, res) => {
 
     await requireStaff(req, sql)
 
-    const query = getQuery(req)
     const status = STATUSES.includes(query.status) ? query.status : 'pendiente'
     const kind = CONTENT_KINDS.includes(query.kind) ? query.kind : null
 
@@ -105,7 +95,7 @@ export default withApi(async (req, res) => {
     return
   }
 
-  if (first === 'content' && typeof second === 'string' && second.length > 0) {
+  if (route === 'content' && id) {
     if (req.method !== 'PATCH') {
       methodNotAllowed(res, ['PATCH'])
       return
@@ -116,7 +106,7 @@ export default withApi(async (req, res) => {
     const body = await readJsonBody(req)
     const updated = await reviewContent(sql, {
       actor,
-      id: second,
+      id,
       action: body.action,
       payload: body.payload,
     })

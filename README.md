@@ -114,8 +114,8 @@ api/                          # Funciones serverless (Vercel) — nunca se empaq
     rateLimit.js                # Límite simple por IP
     audit.js                    # Trazabilidad de acciones privilegiadas
   auth/                         # register, login, logout, me
-  admin/users/                  # Router catch-all: listado (GET) y acciones (PATCH)
-  admin/ai/                     # Router catch-all: proveedores, generación y revisión IA
+  admin/users.js                # Listado (GET) y acciones (PATCH); ver rewrites en vercel.json
+  admin/ai.js                   # Proveedores, generación y revisión IA; ídem
   content/                      # Contenido aprobado, público y cacheable
   achievements/                 # GET logros / POST resultado
   health.js                     # Smoke test Vercel + Neon
@@ -207,7 +207,7 @@ npm run db:seed:reset  # además restablece su contraseña
 4. Correr `npm run db:migrate` y `npm run db:seed` apuntando a la base de producción (localmente con el `.env` de producción, o desde un job).
 5. Deploy. Verificar `GET /api/health`.
 
-> **Plan Hobby de Vercel:** el límite es de 12 Serverless Functions por deploy. Por eso las rutas de administración viven en dos routers catch-all (`api/admin/users/[...path].js` y `api/admin/ai/[...path].js`) en vez de un archivo por endpoint: hoy el proyecto usa 9 funciones. Si agregás rutas nuevas, agrupalas igual o pasate a Pro.
+> **Plan Hobby de Vercel:** el límite es de 12 Serverless Functions por deploy. Por eso las rutas de administración viven en dos archivos (`api/admin/users.js` y `api/admin/ai.js`) y `vercel.json` las expone con `rewrites` (`/api/admin/users/:id`, `/api/admin/ai/providers`, etc.). Las funciones Node de Vercel no tienen rutas dinámicas por nombre de archivo, así que el rewrite es lo que mantiene las URLs. Hoy el proyecto usa 9 funciones: si agregás rutas, sumá el rewrite y agrupá en un archivo existente, o pasate a Pro.
 
 ## Roadmap
 
